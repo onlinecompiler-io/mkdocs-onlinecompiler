@@ -1,0 +1,41 @@
+name: Release
+
+# Pushing a tag vX.Y.Z publishes that version to PyPI by trusted publishing: no token is stored
+# anywhere. The tag must match __version__ in src/mkdocs_onlinecompiler/__init__.py.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install -e . pytest mkdocs-material build
+      - run: pytest -q tests
+      - name: The tag matches the version
+        run: test "v$(python -c 'import mkdocs_onlinecompiler as m; print(m.__version__)')" = "$GITHUB_REF_NAME"
+      - run: python -m build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
