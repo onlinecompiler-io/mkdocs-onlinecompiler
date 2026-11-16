@@ -13,6 +13,8 @@ for n in range(1, 4):
 
 The code runs on [OnlineCompiler.io](https://onlinecompiler.io/?utm_source=pypi), a code execution service, in an isolated sandbox with no network access. Nothing runs on your server or in the reader's browser, so the same docs can run C++, Rust or SQL as easily as Python.
 
+From 0.2.0 each editor ends with a small "Runs on OnlineCompiler.io" link, written into the page's HTML; the editor shows it as its credit line, as it did before.
+
 ## Install
 
 ```bash

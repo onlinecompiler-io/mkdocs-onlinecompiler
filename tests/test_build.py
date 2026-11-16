@@ -11,7 +11,11 @@ from mkdocs.config import load_config
 from mkdocs.exceptions import Abort
 
 FENCE = "```"
-RUNNER = re.compile(r'<div class="runcode onlinecompiler-runner"([^>]*)><pre>(.*?)</pre></div>', re.S)
+RUNNER = re.compile(
+    r'<div class="runcode onlinecompiler-runner"([^>]*)><pre>(.*?)</pre>'
+    r'<a data-credit href="https://onlinecompiler.io/">Runs on OnlineCompiler.io</a></div>',
+    re.S,
+)
 
 PAGE = f"""# Runnable
 

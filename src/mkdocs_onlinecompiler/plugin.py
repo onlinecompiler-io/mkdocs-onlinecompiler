@@ -47,6 +47,11 @@ THEME_SCRIPT = """<script>(function () {
 })();</script>"""
 
 
+
+# The widget's credit line as a plain link in the page, so search engines see who runs the editor; the widget
+# shows it in its footer (https://onlinecompiler.io/docs/widget, data-credit).
+CREDIT = '<a data-credit href="https://onlinecompiler.io/">Runs on OnlineCompiler.io</a>'
+
 class OnlineCompilerConfig(base.Config):
     key = c.Type(str, default="")
     theme = c.Choice(("site", "light", "dark", "auto"), default="site")
@@ -130,5 +135,5 @@ class OnlineCompilerPlugin(BasePlugin[OnlineCompilerConfig]):
             text = "\n" + text
         return (
             f'<div class="runcode onlinecompiler-runner" data-key="{html.escape(self.key)}" '
-            f'data-lang="{html.escape(compiler)}" {theme} style="margin: 1em 0"><pre>{text}</pre></div>'
+            f'data-lang="{html.escape(compiler)}" {theme} style="margin: 1em 0"><pre>{text}</pre>{CREDIT}</div>'
         )
