@@ -15,6 +15,8 @@ The code runs on [OnlineCompiler.io](https://onlinecompiler.io/?utm_source=pypi)
 
 From 0.2.0 each editor ends with a small "Runs on OnlineCompiler.io" link, written into the page's HTML; the editor shows it as its credit line, as it did before.
 
+From 0.2.1 a runnable block ends only at a closing fence written like its opening one: the same characters at the same indentation, which is where Markdown itself ends the block. Earlier versions also ended it at an indented or longer fence inside the code, and the lines after that fence reached the page as HTML, so update if people outside your team can edit your pages.
+
 ## Install
 
 ```bash

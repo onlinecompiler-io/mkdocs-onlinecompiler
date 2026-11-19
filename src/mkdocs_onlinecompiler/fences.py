@@ -48,7 +48,11 @@ def replace_runnable(markdown: str, convert: Callable[[Block], str | None]) -> s
     """Calls ``convert`` for each fenced block marked runnable, and puts the line it returns in
     place of the block, at the block's indentation. When it returns None the block stays code,
     with runnable and lang= taken out of its info string. Blocks inside other code blocks (a
-    page showing the syntax itself) are left alone."""
+    page showing the syntax itself) are left alone.
+
+    A block ends where Python-Markdown ends it: at a line holding the opening fence's own
+    characters at the opening fence's own indentation. A looser rule would end a block at a line
+    Markdown still reads as code, and the rest of that code would reach the page as HTML."""
     lines = markdown.split("\n")
     out: list[str] = []
     i = 0
@@ -61,11 +65,12 @@ def replace_runnable(markdown: str, convert: Callable[[Block], str | None]) -> s
             i += 1
             continue
         indent, fence = opening.group("indent"), opening.group("fence")
-        closing = re.compile(rf"^[ \t]*{re.escape(fence[0])}{{{len(fence)},}}[ \t]*$")
+        closing = re.compile(rf"^{re.escape(indent + fence)}[ \t]*$")
         end = next((j for j in range(i + 1, len(lines)) if closing.match(lines[j])), None)
-        if end is None:  # an unclosed fence runs to the end of the page
-            out.extend(lines[i:])
-            break
+        if end is None:  # never closed, so Markdown does not read it as a fence: an ordinary line
+            out.append(lines[i])
+            i += 1
+            continue
         if not FLAG.search(info):
             out.extend(lines[i : end + 1])
             i = end + 1

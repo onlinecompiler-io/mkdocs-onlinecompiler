@@ -89,6 +89,28 @@ def test_an_unclosed_fence_is_left_alone():
     assert collect(page) == (page, [])
 
 
+def test_a_block_ends_only_at_its_own_fence():
+    # An indented or longer fence inside the code is code. Ending the block there would put the
+    # lines after it on the page as HTML.
+    code = f'doc = """\n    {FENCE}\n<img src=x onerror=alert(1)>\n{FENCE}`\n"""'
+    out, blocks = collect(f"{FENCE}python runnable\n{code}\n{FENCE}\n\nAfter\n")
+    assert [b.code for b in blocks] == [code]
+    assert out == "\nRUNNER\n\n\nAfter\n"
+
+
+def test_an_indented_opening_line_does_not_take_the_fences_below_it():
+    # A lone indented line that looks like an opening fence must not end at another block's
+    # fence, which would turn that block's sample inside out.
+    page = f"    {FENCE}python runnable\n\nText\n\n{FENCE}\n<script>alert(1)</script>\n{FENCE}\n"
+    assert collect(page) == (page, [])
+
+
+def test_blocks_after_an_unclosed_fence_still_run():
+    out, blocks = collect(f"    {FENCE}python\n\n{FENCE}python runnable\nprint(1)\n{FENCE}\n")
+    assert [b.code for b in blocks] == ["print(1)"]
+    assert out == f"    {FENCE}python\n\n\nRUNNER\n\n"
+
+
 def test_a_backtick_fence_cannot_have_backticks_in_its_info():
     page = "``` runnable `x`\ncode\n```\n"
     out, blocks = collect(page)
